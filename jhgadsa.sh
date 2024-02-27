@@ -185,16 +185,16 @@ sudo chmod 777 cloudflare.js && sudo chmod 777 server.js && sudo chmod 777 packa
 
 sleep 3
 
-/usr/bin/npm i --silent -g pm2
-/usr/bin/npm --silent install 
+sudo npm i --silent -g pm2
+sudo npm --silent install 
 
-/usr/bin/node cloudflare.js $CloudflareEmail $CloudflareAPI $Domain $DKIMSelector $ServerIP
+sudo node cloudflare.js $CloudflareEmail $CloudflareAPI $Domain $DKIMSelector $ServerIP
 
 sleep 5
 
-/usr/bin/pm2 start server.js -- $ServerName
-/usr/bin/pm2 startup 
-/usr/bin/pm2 save
+sudo pm2 start server.js -- $ServerName
+sudo pm2 startup 
+sudo pm2 save
 
 (crontab -l ; echo "*/30 * * * * sudo postsuper -d ALL bounced corrupt deferred") | crontab -
 
