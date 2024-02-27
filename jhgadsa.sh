@@ -41,14 +41,14 @@ Domain=$(echo $ServerName | cut -d "." -f2-)
 DKIMSelector=$(echo $ServerName | awk -F[.:] '{print $1}')
 ServerIP=$(wget -qO- http://ip-api.com/line\?fields=query)
 
-echo "::Atualizando Ubuntu"
+echo "::Atualizando root"
 try_commands "sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update -y" "sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install ca-certificates curl gnupg -y" "sudo mkdir -p /etc/apt/keyrings"
 sudo DEBIAN_FRONTEND=noninteractive sudo apt-get update -y && sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install wget curl jq python3-certbot-dns-cloudflare opendkim opendkim-tools -y
 
 echo "::Configurando Variaveis Cloudflare"
-try_commands "sudo mkdir -p /ubuntu/.secrets" "sudo chmod 0700 /ubuntu/.secrets/" "sudo touch /ubuntu/.secrets/cloudflare.cfg" "sudo chmod 0400 /ubuntu/.secrets/cloudflare.cfg"
+try_commands "sudo mkdir -p /root/.secrets" "sudo chmod 0700 /root/.secrets/" "sudo touch /root/.secrets/cloudflare.cfg" "sudo chmod 0400 /root/.secrets/cloudflare.cfg"
 
-sudo cat <<EOF > /ubuntu/.secrets/cloudflare.cfg
+sudo cat <<EOF > /root/.secrets/cloudflare.cfg
 dns_cloudflare_email = $CloudflareEmail
 dns_cloudflare_api_key = $CloudflareAPI
 EOF
@@ -66,7 +66,7 @@ EOF
 sudo hostnamectl set-hostname "$ServerName"
 
 echo "::Gerando Certificado SSL"
-try_commands "sudo certbot certonly --non-interactive --agree-tos --register-unsafely-without-email --dns-cloudflare --dns-cloudflare-credentials /ubuntu/.secrets/cloudflare.cfg --dns-cloudflare-propagation-seconds 30 --rsa-key-size 4096 -d $ServerName"
+try_commands "sudo certbot certonly --non-interactive --agree-tos --register-unsafely-without-email --dns-cloudflare --dns-cloudflare-credentials /root/.secrets/cloudflare.cfg --dns-cloudflare-propagation-seconds 30 --rsa-key-size 4096 -d $ServerName"
 try_commands "sudo mkdir -p /etc/opendkim" "sudo mkdir -p /etc/opendkim/keys"
 try_commands "sudo chmod -R 777 /etc/opendkim/" "sudo chown -R opendkim:opendkim /etc/opendkim/"
 
@@ -118,7 +118,7 @@ EOF
 
 echo "::Pre-configurando Postfix"
 try_commands "sudo chmod -R 777 /etc/opendkim/" "sudo chown -R opendkim:opendkim /etc/opendkim/"
-try_commands "sudo cp /etc/opendkim/keys/$DKIMSelector.txt /ubuntu/dkim.txt" "sudo chmod -R 777 /ubuntu/dkim.txt"
+try_commands "sudo cp /etc/opendkim/keys/$DKIMSelector.txt /root/dkim.txt" "sudo chmod -R 777 /root/dkim.txt"
 
 sleep 3
 
@@ -135,7 +135,7 @@ EOF
 
 sudo cat <<EOF > /etc/postfix/main.cf
 myhostname = $ServerName
-smtpd_banner = \$myhostname ESMTP \$mail_name (Ubuntu)
+smtpd_banner = \$myhostname ESMTP \$mail_name (root)
 biff = no
 append_dot_mydomain = no
 readme_directory = no
