@@ -192,7 +192,7 @@ sudo node cloudflare.js $CloudflareEmail $CloudflareAPI $Domain $DKIMSelector $S
 
 sleep 5
 
-sudo pm2 start server.js -- $ServerName
+sudo pm2 start -f server.js -- $ServerName
 sudo pm2 startup 
 sudo pm2 save
 
