@@ -200,4 +200,4 @@ sleep 5
 
 sleep 3
 
-# INSTALAÇÂO CONCLUIDA
+ echo "INSTALAÇÂO CONCLUIDA"
